@@ -19,9 +19,10 @@ package org.openapitools.codegen.languages;
 
 import com.google.common.collect.Iterables;
 import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.io.File;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.meta.GeneratorMetadata;
@@ -36,10 +37,6 @@ import org.openapitools.codegen.utils.ProcessUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.*;
 
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.camelize;
@@ -54,6 +51,9 @@ public class GoClientCodegen extends AbstractGoCodegen {
     public static final String STRUCT_PREFIX = "structPrefix";
     public static final String WITH_AWSV4_SIGNATURE = "withAWSV4Signature";
     public static final String GENERATE_INTERFACES = "generateInterfaces";
+    public static final String PREFER_UNSIGNED_INT = "preferUnsignedInt";
+
+    
     protected String goImportAlias = "openapiclient";
     protected boolean isGoSubmodule = false;
     protected boolean useOneOfDiscriminatorLookup = false; // use oneOf discriminator's mapping for model lookup
@@ -114,6 +114,8 @@ public class GoClientCodegen extends AbstractGoCodegen {
         cliOptions.add(CliOption.newBoolean(STRUCT_PREFIX, "whether to prefix struct with the class name. e.g. DeletePetOpts => PetApiDeletePetOpts"));
         cliOptions.add(CliOption.newBoolean(WITH_AWSV4_SIGNATURE, "whether to include AWS v4 signature support"));
         cliOptions.add(CliOption.newBoolean(GENERATE_INTERFACES, "Generate interfaces for api classes"));
+        cliOptions.add(CliOption.newBoolean(PREFER_UNSIGNED_INT, "Prefer unsigned integers where minimum value is >= 0")
+                .defaultValue(Boolean.FALSE.toString()));
 
         // option to change the order of form/body parameter
         cliOptions.add(CliOption.newBoolean(
@@ -178,7 +180,7 @@ public class GoClientCodegen extends AbstractGoCodegen {
     public void processOpts() {
         this.setLegacyDiscriminatorBehavior(false);
         super.processOpts();
-
+        
         if (additionalProperties.containsKey(CodegenConstants.PACKAGE_NAME)) {
             setPackageName((String) additionalProperties.get(CodegenConstants.PACKAGE_NAME));
         } else {
@@ -228,6 +230,11 @@ public class GoClientCodegen extends AbstractGoCodegen {
         if (additionalProperties.containsKey(GENERATE_INTERFACES)) {
             setGenerateInterfaces(Boolean.parseBoolean(additionalProperties.get(GENERATE_INTERFACES).toString()));
             additionalProperties.put(GENERATE_INTERFACES, generateInterfaces);
+        }
+
+        if (additionalProperties.containsKey(PREFER_UNSIGNED_INT)) {
+            setPreferUnsignedInt(Boolean.parseBoolean(additionalProperties.get(PREFER_UNSIGNED_INT).toString()));
+            additionalProperties.put(PREFER_UNSIGNED_INT, preferUnsignedInt);
         }
 
         // Generate the 'signing.py' module, but only if the 'HTTP signature' security scheme is specified in the OAS.

@@ -17,8 +17,16 @@
 
 package org.openapitools.codegen.languages;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import javax.annotation.Nullable;
+import joptsimple.internal.Strings;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
@@ -30,9 +38,6 @@ import org.openapitools.codegen.utils.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.camelize;
@@ -49,6 +54,7 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
     protected boolean enumClassPrefix = false;
     protected boolean structPrefix = false;
     protected boolean generateInterfaces = false;
+    protected boolean preferUnsignedInt = false;
 
     protected String packageName = "openapi";
     protected Set<String> numberTypes;
@@ -397,6 +403,31 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
         return toModelName(openAPIType);
     }
 
+    public String getIntegerType(String schemaType, Schema p) {
+        String type = typeMapping.getOrDefault(schemaType, schemaType);
+
+        BigInteger minimum = Optional.ofNullable(p.getMinimum()).map(BigDecimal::toBigInteger).orElse(null);
+        boolean exclusiveMinimum = Optional.ofNullable(p.getExclusiveMinimum()).orElse(false);
+        boolean unsigned = this.preferUnsignedInt && canFitIntoUnsigned(minimum, exclusiveMinimum);
+
+        if (Strings.isNullOrEmpty(p.getFormat())) {
+                return unsigned ? "uint32" : "int32";
+        } else {
+            switch (p.getFormat()) {
+                case "int32":
+                    return unsigned ? "uint32" : "int32";
+                case "int64":
+                    return unsigned ? "uint64" : "int64";
+                case "uint32":
+                    return "uint32";
+                case "uint64":
+                    return "uint64";
+            }
+        }
+
+        return type;
+    }
+
     /**
      * Return the OpenAPI type for the property.
      *
@@ -414,12 +445,18 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
         } else if ("object".equals(openAPIType) && ModelUtils.isAnyType(p)) {
             // Arbitrary type. Note this is not the same thing as free-form object.
             type = "interface{}";
+        } else if ("integer".equals(openAPIType)) {
+            type = getIntegerType(openAPIType, p);
         } else if (typeMapping.containsKey(openAPIType)) {
             type = typeMapping.get(openAPIType);
-            if (languageSpecificPrimitives.contains(type))
+
+            if (languageSpecificPrimitives.contains(type)) {
                 return (type);
-        } else
+            }
+        } else {
             type = openAPIType;
+        }
+
         return type;
     }
 
@@ -817,6 +854,10 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
         this.generateInterfaces = generateInterfaces;
     }
 
+    public void setPreferUnsignedInt(boolean preferUnsignedInt) {
+        this.preferUnsignedInt = preferUnsignedInt;
+    }
+
     @Override
     public String toDefaultValue(Schema schema) {
         schema = unaliasSchema(schema);
@@ -879,4 +920,22 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
     public GeneratorLanguage generatorLanguage() {
         return GeneratorLanguage.GO;
     }
+
+
+     /**
+     * Determine if an integer property can be guaranteed to fit into an unsigned data type.
+     * @param minimum The minimum value as set in the specification.
+     * @param exclusiveMinimum If boundary values are excluded by the specification.
+     * @return True if the effective minimum is greater than or equal to zero.
+     */
+    @VisibleForTesting
+    public boolean canFitIntoUnsigned(@Nullable BigInteger minimum, boolean exclusiveMinimum) {
+        return Optional.ofNullable(minimum).map(min -> {
+            if (exclusiveMinimum) {
+                min = min.add(BigInteger.ONE);
+            }
+            return min.signum() >= 0;
+        }).orElse(false);
+    }
+
 }
