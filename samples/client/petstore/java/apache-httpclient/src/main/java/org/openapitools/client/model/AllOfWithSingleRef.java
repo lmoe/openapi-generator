@@ -34,27 +34,29 @@ import java.util.StringJoiner;
   AllOfWithSingleRef.JSON_PROPERTY_USERNAME,
   AllOfWithSingleRef.JSON_PROPERTY_SINGLE_REF_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.11.0-SNAPSHOT")
 public class AllOfWithSingleRef {
   public static final String JSON_PROPERTY_USERNAME = "username";
+  @javax.annotation.Nullable
   private String username;
 
   public static final String JSON_PROPERTY_SINGLE_REF_TYPE = "SingleRefType";
+  @javax.annotation.Nullable
   private SingleRefType singleRefType;
 
   public AllOfWithSingleRef() {
   }
 
-  public AllOfWithSingleRef username(String username) {
+  public AllOfWithSingleRef username(@javax.annotation.Nullable String username) {
     
     this.username = username;
     return this;
   }
 
-   /**
+  /**
    * Get username
    * @return username
-  **/
+   */
   @javax.annotation.Nullable
   @JsonProperty(JSON_PROPERTY_USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
@@ -66,21 +68,20 @@ public class AllOfWithSingleRef {
 
   @JsonProperty(JSON_PROPERTY_USERNAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUsername(String username) {
+  public void setUsername(@javax.annotation.Nullable String username) {
     this.username = username;
   }
 
-
-  public AllOfWithSingleRef singleRefType(SingleRefType singleRefType) {
+  public AllOfWithSingleRef singleRefType(@javax.annotation.Nullable SingleRefType singleRefType) {
     
     this.singleRefType = singleRefType;
     return this;
   }
 
-   /**
+  /**
    * Get singleRefType
    * @return singleRefType
-  **/
+   */
   @javax.annotation.Nullable
   @JsonProperty(JSON_PROPERTY_SINGLE_REF_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
@@ -92,10 +93,9 @@ public class AllOfWithSingleRef {
 
   @JsonProperty(JSON_PROPERTY_SINGLE_REF_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSingleRefType(SingleRefType singleRefType) {
+  public void setSingleRefType(@javax.annotation.Nullable SingleRefType singleRefType) {
     this.singleRefType = singleRefType;
   }
-
 
   @Override
   public boolean equals(Object o) {
@@ -180,7 +180,12 @@ public class AllOfWithSingleRef {
 
     // add `SingleRefType` to the URL query string
     if (getSingleRefType() != null) {
-      joiner.add(getSingleRefType().toUrlQueryString(prefix + "SingleRefType" + suffix));
+      try {
+        joiner.add(String.format("%sSingleRefType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getSingleRefType()), "UTF-8").replaceAll("\\+", "%20")));
+      } catch (UnsupportedEncodingException e) {
+        // Should never happen, UTF-8 is always supported
+        throw new RuntimeException(e);
+      }
     }
 
     return joiner.toString();

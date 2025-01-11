@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.lang.Nullable;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
@@ -21,14 +22,23 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("Category")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.11.0-SNAPSHOT")
 public class CategoryDto {
 
-  @JsonProperty("id")
-  private Long id;
+  private @Nullable Long id;
 
-  @JsonProperty("name")
   private String name = "default-name";
+
+  public CategoryDto() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public CategoryDto(String name) {
+    this.name = name;
+  }
 
   public CategoryDto id(Long id) {
     this.id = id;
@@ -38,9 +48,10 @@ public class CategoryDto {
   /**
    * Get id
    * @return id
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("id")
   public Long getId() {
     return id;
   }
@@ -57,9 +68,10 @@ public class CategoryDto {
   /**
    * Get name
    * @return name
-  */
+   */
   @NotNull 
   @ApiModelProperty(required = true, value = "")
+  @JsonProperty("name")
   public String getName() {
     return name;
   }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.lang.Nullable;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
@@ -21,32 +22,24 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("User")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.11.0-SNAPSHOT")
 public class UserDto {
 
-  @JsonProperty("id")
-  private Long id;
+  private @Nullable Long id;
 
-  @JsonProperty("username")
-  private String username;
+  private @Nullable String username;
 
-  @JsonProperty("firstName")
-  private String firstName;
+  private @Nullable String firstName;
 
-  @JsonProperty("lastName")
-  private String lastName;
+  private @Nullable String lastName;
 
-  @JsonProperty("email")
-  private String email;
+  private @Nullable String email;
 
-  @JsonProperty("password")
-  private String password;
+  private @Nullable String password;
 
-  @JsonProperty("phone")
-  private String phone;
+  private @Nullable String phone;
 
-  @JsonProperty("userStatus")
-  private Integer userStatus;
+  private @Nullable Integer userStatus;
 
   public UserDto id(Long id) {
     this.id = id;
@@ -56,9 +49,10 @@ public class UserDto {
   /**
    * Get id
    * @return id
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("id")
   public Long getId() {
     return id;
   }
@@ -75,9 +69,10 @@ public class UserDto {
   /**
    * Get username
    * @return username
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("username")
   public String getUsername() {
     return username;
   }
@@ -94,9 +89,10 @@ public class UserDto {
   /**
    * Get firstName
    * @return firstName
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("firstName")
   public String getFirstName() {
     return firstName;
   }
@@ -113,9 +109,10 @@ public class UserDto {
   /**
    * Get lastName
    * @return lastName
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("lastName")
   public String getLastName() {
     return lastName;
   }
@@ -132,9 +129,10 @@ public class UserDto {
   /**
    * Get email
    * @return email
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("email")
   public String getEmail() {
     return email;
   }
@@ -151,9 +149,10 @@ public class UserDto {
   /**
    * Get password
    * @return password
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("password")
   public String getPassword() {
     return password;
   }
@@ -170,9 +169,10 @@ public class UserDto {
   /**
    * Get phone
    * @return phone
-  */
+   */
   
   @ApiModelProperty(value = "")
+  @JsonProperty("phone")
   public String getPhone() {
     return phone;
   }
@@ -189,9 +189,10 @@ public class UserDto {
   /**
    * User Status
    * @return userStatus
-  */
+   */
   
   @ApiModelProperty(value = "User Status")
+  @JsonProperty("userStatus")
   public Integer getUserStatus() {
     return userStatus;
   }

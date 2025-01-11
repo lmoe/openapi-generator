@@ -24,8 +24,21 @@ import org.openapitools.client.model.Pet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,7 +54,7 @@ import java.util.function.Consumer;
 
 import java.util.concurrent.CompletableFuture;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.11.0-SNAPSHOT")
 public class PetApi {
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
@@ -160,6 +173,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Deletes a pet
    * 
@@ -243,6 +257,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Finds Pets by status
    * Multiple status values can be provided with comma separated strings
@@ -350,6 +365,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Finds Pets by tags
    * Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
@@ -461,6 +477,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Find pet by ID
    * Returns a single pet
@@ -554,6 +571,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Update an existing pet
    * 
@@ -637,6 +655,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * Updates a pet in the store with form data
    * 
@@ -710,7 +729,24 @@ public class PetApi {
 
     localVarRequestBuilder.header("Accept", "application/json");
 
-    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    List<NameValuePair> formValues = new ArrayList<>();
+    if (name != null) {
+        formValues.add(new BasicNameValuePair("name", name.toString()));
+    }
+    if (status != null) {
+        formValues.add(new BasicNameValuePair("status", status.toString()));
+    }
+    HttpEntity entity = new UrlEncodedFormEntity(formValues, java.nio.charset.StandardCharsets.UTF_8);
+    ByteArrayOutputStream formOutputStream = new ByteArrayOutputStream();
+    try {
+        entity.writeTo(formOutputStream);
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+    localVarRequestBuilder
+        .header("Content-Type", entity.getContentType().getValue())
+        .method("POST", HttpRequest.BodyPublishers
+            .ofInputStream(() -> new ByteArrayInputStream(formOutputStream.toByteArray())));
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
@@ -719,6 +755,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * uploads an image
    * 
@@ -807,7 +844,41 @@ public class PetApi {
 
     localVarRequestBuilder.header("Accept", "application/json");
 
-    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    MultipartEntityBuilder multiPartBuilder = MultipartEntityBuilder.create();
+    boolean hasFiles = false;
+    multiPartBuilder.addTextBody("additionalMetadata", additionalMetadata.toString());
+    multiPartBuilder.addBinaryBody("file", _file);
+    hasFiles = true;
+    HttpEntity entity = multiPartBuilder.build();
+    HttpRequest.BodyPublisher formDataPublisher;
+    if (hasFiles) {
+        Pipe pipe;
+        try {
+            pipe = Pipe.open();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        new Thread(() -> {
+            try (OutputStream outputStream = Channels.newOutputStream(pipe.sink())) {
+                entity.writeTo(outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        formDataPublisher = HttpRequest.BodyPublishers.ofInputStream(() -> Channels.newInputStream(pipe.source()));
+    } else {
+        ByteArrayOutputStream formOutputStream = new ByteArrayOutputStream();
+        try {
+            entity.writeTo(formOutputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        formDataPublisher = HttpRequest.BodyPublishers
+            .ofInputStream(() -> new ByteArrayInputStream(formOutputStream.toByteArray()));
+    }
+    localVarRequestBuilder
+        .header("Content-Type", entity.getContentType().getValue())
+        .method("POST", formDataPublisher);
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
@@ -816,6 +887,7 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
   /**
    * uploads an image (required)
    * 
@@ -908,7 +980,41 @@ public class PetApi {
 
     localVarRequestBuilder.header("Accept", "application/json");
 
-    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    MultipartEntityBuilder multiPartBuilder = MultipartEntityBuilder.create();
+    boolean hasFiles = false;
+    multiPartBuilder.addTextBody("additionalMetadata", additionalMetadata.toString());
+    multiPartBuilder.addBinaryBody("requiredFile", requiredFile);
+    hasFiles = true;
+    HttpEntity entity = multiPartBuilder.build();
+    HttpRequest.BodyPublisher formDataPublisher;
+    if (hasFiles) {
+        Pipe pipe;
+        try {
+            pipe = Pipe.open();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        new Thread(() -> {
+            try (OutputStream outputStream = Channels.newOutputStream(pipe.sink())) {
+                entity.writeTo(outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        formDataPublisher = HttpRequest.BodyPublishers.ofInputStream(() -> Channels.newInputStream(pipe.source()));
+    } else {
+        ByteArrayOutputStream formOutputStream = new ByteArrayOutputStream();
+        try {
+            entity.writeTo(formOutputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        formDataPublisher = HttpRequest.BodyPublishers
+            .ofInputStream(() -> new ByteArrayInputStream(formOutputStream.toByteArray()));
+    }
+    localVarRequestBuilder
+        .header("Content-Type", entity.getContentType().getValue())
+        .method("POST", formDataPublisher);
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
@@ -917,4 +1023,5 @@ public class PetApi {
     }
     return localVarRequestBuilder;
   }
+
 }
