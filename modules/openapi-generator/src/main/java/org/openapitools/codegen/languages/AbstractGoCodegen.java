@@ -34,6 +34,8 @@ import org.openapitools.codegen.model.*;
 import org.openapitools.codegen.utils.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
 
 
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
@@ -58,8 +60,17 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
     @Setter
     protected boolean generateInterfaces = false;
     @Setter
+    protected boolean withGoMod = false;
+    @Setter
+    protected boolean generateMarshalJSON = true;
+    @Setter
+    protected boolean generateUnmarshalJSON = true;
+    @Setter
+    protected boolean useDefaultValuesForRequiredVars = false;
+    @Setter
     protected boolean preferUnsignedInt = false;
 
+    @Setter
     protected String packageName = "openapi";
     protected Set<String> numberTypes;
 

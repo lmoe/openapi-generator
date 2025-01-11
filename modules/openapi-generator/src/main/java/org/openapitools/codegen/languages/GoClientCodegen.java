@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables;
 import com.samskivert.mustache.Mustache;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
@@ -53,12 +54,14 @@ public class GoClientCodegen extends AbstractGoCodegen {
     public static final String STRUCT_PREFIX = "structPrefix";
     public static final String WITH_AWSV4_SIGNATURE = "withAWSV4Signature";
     public static final String GENERATE_INTERFACES = "generateInterfaces";
+    public static final String MODEL_FILE_FOLDER = "modelFileFolder";
+    public static final String WITH_GO_MOD = "withGoMod";
+    public static final String USE_DEFAULT_VALUES_FOR_REQUIRED_VARS = "useDefaultValuesForRequiredVars";
     public static final String PREFER_UNSIGNED_INT = "preferUnsignedInt";
-
-    
-    @Setter  protected String goImportAlias = "openapiclient";
+    @Setter protected String goImportAlias = "openapiclient";
     protected boolean isGoSubmodule = false;
     @Setter protected boolean useOneOfDiscriminatorLookup = false; // use oneOf discriminator's mapping for model lookup
+
 
     // A cache to efficiently lookup schema `toModelName()` based on the schema Key
     private Map<String, String> schemaKeyToModelNameCache = new HashMap<>();
